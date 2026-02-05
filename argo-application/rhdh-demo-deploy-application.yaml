@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: rhdh-demo-deploy
+  namespace: openshift-gitops
+spec:
+  destination:
+    server: 'https://kubernetes.default.svc'
+  project: default
+  source:
+    helm:
+      parameters:
+        - name: cluster.domain
+          value: <here-goes-your-openshift-cluster-domain>
+    path: demo-deploy
+    repoURL: 'https://github.com/sgutierr/rhdh-jfrog-gitlab-demo.git'
+    targetRevision: HEAD
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    retry:
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 10m
+      limit: 10
+    syncOptions:
+      - CreateNamespace=true

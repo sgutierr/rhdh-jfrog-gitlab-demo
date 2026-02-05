@@ -1,7 +1,7 @@
 auth:
   sessionSecret: CHANGE
 cluster:
-  domain: apps.cluster-grlrs.grlrs.gcp.redhatworkshops.io
+  domain: apps.ocp4.quitala.eu
 developerhub:
   namespaceName: rhdh-operator
   operatorGroupName: rhdh-operatorgroup

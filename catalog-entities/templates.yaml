@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: software-templates
+  description: A collection of Backstage templates for Janus-IDP Backstage
+spec:
+  targets:
+    - ./software-templates/scaffolder-templates/jboss-eap-vm-template/template.yaml
+    - ./software-templates/scaffolder-templates/jboss-eap-vm-template/nestjs-with-postgres/template.yaml
+    - ./software-templates/scaffolder-templates/jboss-eap-vm-template/quarkus-with-angular/template.yaml
+    - ./software-templates/scaffolder-templates/jboss-eap-vm-template/custom-component-patch/template.yaml
+    - ./software-templates/scaffolder-templates/jboss-eap-vm-template/custom-deployment-patch/template.yaml  
