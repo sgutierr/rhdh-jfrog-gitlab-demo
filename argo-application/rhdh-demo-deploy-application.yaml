@@ -12,7 +12,7 @@ spec:
       parameters:
         - name: cluster.domain
           value: <here-goes-your-openshift-cluster-domain>
-    path: demo-deploy
+    path: installation
     repoURL: 'https://github.com/sgutierr/rhdh-jfrog-gitlab-demo.git'
     targetRevision: HEAD
   syncPolicy:
