@@ -11,7 +11,10 @@ spec:
     helm:
       parameters:
         - name: cluster.domain
-          value: <here-goes-your-openshift-cluster-domain>
+          value: apps.ocp4.quitala.eu
+        - name: github.pat
+        - name: gitlab.version
+          value: 8.11.4            
     path: installation
     repoURL: 'https://github.com/sgutierr/rhdh-jfrog-gitlab-demo.git'
     targetRevision: HEAD

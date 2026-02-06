@@ -1,0 +1,45 @@
+# installation/templates/sw3/gitlab-helm.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: install-gitlab-helm
+  namespace: {{ .Values.gitlab.namespaceName }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+spec:
+  template:
+    spec:
+      serviceAccountName: argocd-argocd-application-controller
+      containers:
+      - name: helm
+        image: alpine/helm:latest
+        command:
+        - /bin/sh
+        - -c
+        - |
+          helm repo add gitlab https://charts.gitlab.io/
+          helm repo update
+          helm upgrade --install gitlab gitlab/gitlab \
+            --namespace {{ .Values.gitlab.namespaceName }} \
+            --version {{ .Values.gitlab.version }} \
+            --set global.hosts.domain={{ .Values.cluster.domain }} \
+            --set global.hosts.hostSuffix={{ .Values.gitlab.instanceName }} \
+            --set global.ingress.class=none \
+            --set global.ingress.configureCertmanager=false \
+            --set global.ingress.annotations."route\.openshift\.io/termination"=edge \
+            --set global.ingress.tls.enabled=false \
+            --set global.kas.enabled=false \
+            --set webservice.replicas=1 \
+            --set sidekiq.replicas=1 \
+            --set gitlab-shell.replicas=1 \
+            --set gitlab-registry.replicas=1 \
+            --set prometheus.alertmanager.enabled=false \
+            --set prometheus.pushgateway.enabled=false \
+            --set prometheus.server.enabled=false \
+            --set nginx-ingress.enabled=false \
+            --set certmanager.install=false \
+            --set postgresql.primary.extendedConfiguration="max_connections = 200" \
+            --timeout 10m
+      restartPolicy: Never
