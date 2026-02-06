@@ -11,7 +11,7 @@ metadata:
 spec:
   template:
     spec:
-      serviceAccountName: argocd-argocd-application-controller
+      serviceAccountName: gitlab
       containers:
       - name: helm
         image: alpine/helm:latest
