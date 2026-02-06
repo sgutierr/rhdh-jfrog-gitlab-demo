@@ -11,7 +11,7 @@ metadata:
 spec:
   template:
     spec:
-      serviceAccountName: gitlab
+      serviceAccountName: resources-checker
       containers:
       - name: helm
         image: docker.io/alpine/helm:latest
