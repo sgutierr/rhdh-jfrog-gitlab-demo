@@ -25,14 +25,14 @@ spec:
           volumeMounts:
             - mountPath: /data
               name: cache-volume
-          env:
-            - name: POSTGRES_PASSWORD
+          env: 
+            - name: POSTGRESQL_PASSWORD
               value: '{{ .Values.keycloak.postgresPassword }}'
             - name: PGDATA
               value: /data/pgdata
-            - name: POSTGRES_DATABASE
+            - name: POSTGRESQL_DATABASE
               value: '{{ .Values.keycloak.postgresDb }}'
-            - name: POSTGRES_USER
+            - name: POSTGRESQL_USER
               value: '{{ .Values.keycloak.postgresUsername }}'
       volumes:
         - name: cache-volume
