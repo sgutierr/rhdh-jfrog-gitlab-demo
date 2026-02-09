@@ -32,7 +32,7 @@ keycloak:
   dbSecretName: keycloak-db-secret
   statefulSetName: postgresql-db
   postgresPassword: testpassword
-  postgresUsername: postgres
+  postgresUsername: keycloak
   postgresDb: keycloak
   crtFile: |
     -----BEGIN CERTIFICATE-----
