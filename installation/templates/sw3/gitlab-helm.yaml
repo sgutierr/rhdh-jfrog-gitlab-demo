@@ -28,7 +28,7 @@ spec:
         - -c
         - |
           helm repo add gitlab https://charts.gitlab.io/
-          helm repo update
+          helm repo update gitlab
           helm upgrade --install gitlab gitlab/gitlab \
             --namespace {{ .Values.gitlab.namespaceName }} \
             --version {{ .Values.gitlab.version }} \
