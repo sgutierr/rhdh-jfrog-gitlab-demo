@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: postgresql-db
-          image: postgres:latest
+          image: quay.io/centos/postgresql-12-centos7:latest
           volumeMounts:
             - mountPath: /data
               name: cache-volume
