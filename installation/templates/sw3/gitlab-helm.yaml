@@ -15,6 +15,14 @@ spec:
       containers:
       - name: helm
         image: docker.io/alpine/helm:latest
+        env:
+          # Configurar Helm para usar un directorio con permisos de escritura
+          - name: HELM_HOME
+            value: /tmp/helm
+          - name: XDG_CONFIG_HOME
+            value: /tmp
+          - name: XDG_CACHE_HOME
+            value: /tmp        
         command:
         - /bin/sh
         - -c
