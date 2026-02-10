@@ -27,9 +27,61 @@ spec:
         - /bin/sh
         - -c
         - |
-          helm repo add gitlab https://charts.gitlab.io/
-          helm repo update gitlab
-          helm upgrade --install gitlab gitlab/gitlab \
+          set -e
+          
+          mkdir -p /tmp/helm
+          chmod 755 /tmp/helm
+          
+          # Verificar conectividad de red
+          echo "Verificando conectividad de red..."
+          if ! wget --spider --timeout=30 https://charts.gitlab.io/index.yaml 2>/dev/null; then
+            echo "ADVERTENCIA: No se pudo verificar conectividad con charts.gitlab.io"
+            echo "Intentando continuar de todas formas..."
+          else
+            echo "Conectividad verificada"
+          fi
+          
+          # Intentar agregar el repositorio con reintentos
+          echo "Agregando repositorio de GitLab..."
+          MAX_RETRIES=5
+          RETRY_COUNT=0
+          REPO_ADDED=false
+          
+          while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+            if helm repo add gitlab https://charts.gitlab.io/ 2>/dev/null; then
+              echo "Repositorio agregado exitosamente"
+              REPO_ADDED=true
+              break
+            else
+              RETRY_COUNT=$((RETRY_COUNT + 1))
+              echo "Intento $RETRY_COUNT/$MAX_RETRIES falló, reintentando en 10 segundos..."
+              sleep 10
+            fi
+          done
+          
+          if [ "$REPO_ADDED" = "false" ]; then
+            echo "ERROR: No se pudo agregar el repositorio después de $MAX_RETRIES intentos"
+            echo "Verificando si el repositorio ya existe..."
+            if helm repo list | grep -q "^gitlab"; then
+              echo "El repositorio ya existe, continuando..."
+            else
+              echo "ERROR CRÍTICO: No se puede continuar sin el repositorio"
+              exit 1
+            fi
+          fi
+          
+          # Actualizar repositorio con timeout aumentado
+          echo "Actualizando repositorio..."
+          if ! helm repo update gitlab --timeout 60s 2>/dev/null; then
+            echo "ADVERTENCIA: No se pudo actualizar el repositorio, usando caché local si existe"
+          fi
+          
+          # Verificar que el repositorio está disponible
+          echo "Verificando disponibilidad del chart..."
+          if ! helm search repo gitlab/gitlab --versions 2>/dev/null | head -n 1; then
+            echo "ADVERTENCIA: No se puede buscar en el repositorio, pero continuando..."
+          fi
+          helm install gitlab gitlab/gitlab \
             --namespace {{ .Values.gitlab.namespaceName }} \
             --version {{ .Values.gitlab.version }} \
             --set global.hosts.domain={{ .Values.cluster.domain }} \
