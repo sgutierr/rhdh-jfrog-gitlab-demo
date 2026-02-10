@@ -49,5 +49,36 @@ spec:
             --set nginx-ingress.enabled=false \
             --set certmanager.install=false \
             --set postgresql.primary.extendedConfiguration="max_connections = 200" \
+            --set global.podSecurityPolicy.enabled=false \
+            --set global.seccomp.enabled=false \
+            --set shared-secrets.securityContext.seccompProfile.type=RuntimeDefault \
+            --set shared-secrets.securityContext.runAsUser=1000780000 \
+            --set shared-secrets.securityContext.fsGroup=1000780000 \
+            --set shared-secrets.securityContext.hostUsers=false \
+            --set global.securityContext.runAsUser=1000780000 \
+            --set global.securityContext.fsGroup=1000780000 \
+            --set global.securityContext.hostUsers=false \            
             --timeout 10m
+          echo "GitLab instalado. Asignando SCC anyuid a ServiceAccounts..."
+          
+          # Esperar un momento para que los ServiceAccounts se creen
+          sleep 10
+          
+          # Asignar SCC anyuid a todos los ServiceAccounts de GitLab
+          for sa in gitlab-shared-secrets gitlab gitlab-runner; do
+            if oc get serviceaccount $sa -n {{ .Values.gitlab.namespaceName }} 2>/dev/null; then
+              echo "Asignando SCC anyuid a $sa"
+              oc adm policy add-scc-to-user anyuid -z $sa -n {{ .Values.gitlab.namespaceName }} || true
+            fi
+          done
+          
+          # Asignar a cualquier otro ServiceAccount que GitLab haya creado
+          for sa in $(oc get serviceaccount -n {{ .Values.gitlab.namespaceName }} -o name 2>/dev/null | grep -E "(gitlab|shared)"); do
+            sa_name=$(echo $sa | cut -d'/' -f2)
+            echo "Asignando SCC anyuid a $sa_name"
+            oc adm policy add-scc-to-user anyuid -z $sa_name -n {{ .Values.gitlab.namespaceName }} || true
+          done
+          
+          echo "Instalación completada"
       restartPolicy: Never
+  backoffLimit: 2
