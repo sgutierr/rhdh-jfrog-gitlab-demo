@@ -1,0 +1,40 @@
+# installation/templates/sw2/gitlab-scc-assignment.yaml
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: assign-scc-to-gitlab-sa
+  namespace: {{ .Values.gitlab.namespaceName }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+spec:
+  template:
+    spec:
+      serviceAccountName: gitlab
+      containers:
+      - name: oc
+        image: registry.redhat.io/openshift4/ose-cli
+        command:
+        - /bin/bash
+        - -c
+        - |
+          set -e
+          
+          echo "Asignando SCC anyuid a ServiceAccounts de GitLab..."
+          
+          # Asignar SCC anyuid a los ServiceAccounts
+          oc adm policy add-scc-to-user anyuid -z gitlab-shared-secrets -n {{ .Values.gitlab.namespaceName }} || true
+          oc adm policy add-scc-to-user anyuid -z gitlab -n {{ .Values.gitlab.namespaceName }} || true
+          oc adm policy add-scc-to-user anyuid -z gitlab-runner -n {{ .Values.gitlab.namespaceName }} || true
+          
+          # También asignar a otros ServiceAccounts que GitLab pueda crear
+          for sa in $(oc get serviceaccount -n {{ .Values.gitlab.namespaceName }} -o name | grep gitlab); do
+            echo "Asignando SCC anyuid a $sa"
+            oc adm policy add-scc-to-user anyuid -z $(echo $sa | cut -d'/' -f2) -n {{ .Values.gitlab.namespaceName }} || true
+          done
+          
+          echo "SCCs asignados exitosamente"
+      restartPolicy: Never
+  backoffLimit: 2
