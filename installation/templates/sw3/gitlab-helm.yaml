@@ -109,10 +109,9 @@ spec:
             --set shared-secrets.securityContext.hostUsers=false \
             --set global.securityContext.runAsUser=1000780000 \
             --set global.securityContext.fsGroup=1000780000 \
-            --set global.securityContext.hostUsers=false \            
-            --timeout 20m
-          echo "GitLab instalado. Asignando SCC anyuid a ServiceAccounts..."
-          
+            --set global.securityContext.hostUsers=false 
+
+                 
           # Esperar un momento para que los ServiceAccounts se creen
           sleep 10
           
