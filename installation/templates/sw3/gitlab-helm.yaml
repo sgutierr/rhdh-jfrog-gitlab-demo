@@ -102,15 +102,7 @@ spec:
             --set certmanager.install=false \
             --set postgresql.primary.extendedConfiguration="max_connections = 200" \
             --set global.podSecurityPolicy.enabled=false \
-            --set global.seccomp.enabled=false \
-            --set shared-secrets.securityContext.seccompProfile.type=RuntimeDefault \
-            --set shared-secrets.securityContext.runAsUser=1000780000 \
-            --set shared-secrets.securityContext.fsGroup=1000780000 \
-            --set shared-secrets.securityContext.hostUsers=false \
-            --set global.securityContext.runAsUser=1000780000 \
-            --set global.securityContext.fsGroup=1000780000 \
-            --set global.securityContext.hostUsers=false 
-
+            --set global.seccomp.enabled=false 
                  
           # Esperar un momento para que los ServiceAccounts se creen
           sleep 10
