@@ -94,7 +94,9 @@ spec:
             --set webservice.replicas=1 \
             --set sidekiq.replicas=1 \
             --set gitlab-shell.replicas=0 \
+            --set gitlab-shell.enabled=false \
             --set gitlab-registry.replicas=0 \
+            --set gitlab-registry.enabled=false \
             --set prometheus.alertmanager.enabled=false \
             --set prometheus.pushgateway.enabled=false \
             --set prometheus.server.enabled=false \
@@ -103,9 +105,13 @@ spec:
             --set postgresql.primary.extendedConfiguration="max_connections = 200" \
             --set global.podSecurityPolicy.enabled=false \
             --set global.seccomp.enabled=false \
-            --set shared-secrets.enabled=false
-            
-                  
+            --set shared-secrets.securityContext.runAsUser=1000810001 \
+            --set shared-secrets.securityContext.fsGroup=1000810001 \
+            --set shared-secrets.securityContext.hostUsers=false \
+            --set global.securityContext.runAsUser=1000810001 \
+            --set global.securityContext.fsGroup=1000810001 \
+            --set global.securityContext.hostUsers=false               
+
           # Esperar un momento para que los ServiceAccounts se creen
           sleep 10
           
